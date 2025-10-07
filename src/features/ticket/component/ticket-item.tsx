@@ -1,37 +1,51 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ticketPath } from "@/paths";
 import Link from "next/link";
 import { TICKET_ICONS } from "../constants";
 import { Ticket } from "../types";
+import { LucideSquareArrowOutUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import clsx from "clsx";
 
 type TicketItemProps = {
   ticket: Ticket;
+  isDetail?: boolean;
 };
-export const TicketItem = ({ ticket }: TicketItemProps) => {
+export const TicketItem = ({ ticket, isDetail }: TicketItemProps) => {
+  const detailButton = (
+    <Button variant="outline" size="icon" asChild>
+      <Link href={ticketPath(ticket.id)}>
+        <LucideSquareArrowOutUpRight className="h-4 w-4" />
+      </Link>
+    </Button>
+  );
   return (
-    <Card className="w-full max-w-[420px]">
-      <CardHeader>
-        <CardTitle className="flex gap-x-2">
-          <span>{TICKET_ICONS[ticket.status]}</span>
-          <h2 className="truncate">{ticket.title}</h2>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <span className="line-clamp-3 whitespace-break-spaces">
-          {ticket.content}
-        </span>
-      </CardContent>
-      <CardFooter>
-        <Link href={ticketPath(ticket.id)} className="underline">
-          View
-        </Link>
-      </CardFooter>
-    </Card>
+    <div
+      className={clsx("w-full  flex gap-x-1", {
+        "max-w-[420px]": !isDetail,
+        "max-w-[580px]": isDetail,
+      })}
+    >
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex gap-x-2">
+            <span>{TICKET_ICONS[ticket.status]}</span>
+            <h2 className="truncate">{ticket.title}</h2>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <span
+            className={clsx("whitespace-break-spaces", {
+              "line-clamp-3": !isDetail,
+            })}
+          >
+            {ticket.content}
+          </span>
+        </CardContent>
+      </Card>
+      {isDetail ? null : (
+        <div className="flex flex-col gap-y-1">{detailButton}</div>
+      )}
+    </div>
   );
 };
